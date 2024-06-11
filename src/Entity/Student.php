@@ -24,8 +24,14 @@ class Student
     /**
      * @var Collection<int, Teacher>
      */
-    #[ORM\ManyToMany(targetEntity: Teacher::class, mappedBy: 'student')]
+    #[ORM\ManyToMany(targetEntity: Teacher::class, mappedBy: 'students')]
     private Collection $teachers;
+
+    #[ORM\Column]
+    private ?int $semester = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $section = null;
 
     public function __construct()
     {
@@ -84,6 +90,30 @@ class Student
         if ($this->teachers->removeElement($teacher)) {
             $teacher->removeStudent($this);
         }
+
+        return $this;
+    }
+
+    public function getSemester(): ?int
+    {
+        return $this->semester;
+    }
+
+    public function setSemester(int $semester): static
+    {
+        $this->semester = $semester;
+
+        return $this;
+    }
+
+    public function getSection(): ?string
+    {
+        return $this->section;
+    }
+
+    public function setSection(string $section): static
+    {
+        $this->section = $section;
 
         return $this;
     }

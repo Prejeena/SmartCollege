@@ -28,11 +28,11 @@ class Teacher
      * @var Collection<int, Student>
      */
     #[ORM\ManyToMany(targetEntity: Student::class, inversedBy: 'teachers')]
-    private Collection $student;
+    private Collection $students;
 
     public function __construct()
     {
-        $this->student = new ArrayCollection();
+        $this->students = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -79,15 +79,15 @@ class Teacher
     /**
      * @return Collection<int, Student>
      */
-    public function getStudent(): Collection
+    public function getStudents(): Collection
     {
-        return $this->student;
+        return $this->students;
     }
 
     public function addStudent(Student $student): static
     {
-        if (!$this->student->contains($student)) {
-            $this->student->add($student);
+        if (!$this->students->contains($student)) {
+            $this->students->add($student);
         }
 
         return $this;
@@ -95,7 +95,7 @@ class Teacher
 
     public function removeStudent(Student $student): static
     {
-        $this->student->removeElement($student);
+        $this->students->removeElement($student);
 
         return $this;
     }

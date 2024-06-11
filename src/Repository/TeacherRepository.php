@@ -40,4 +40,30 @@ class TeacherRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+                            public function findStudentsByTeacherName($teacherName, $studentName)
+                            {
+                                $teacher = $this->createQueryBuilder('t')
+                                    ->join('t.students', 's') // Join the Student entity
+                                    ->andWhere('t.name = :teacherName') // Filter by the teacher's name
+                                    ->andWhere('s.section = :studentName') // Filter by the student's name
+                                    ->setParameter('teacherName', $teacherName)
+                                    ->setParameter('studentName', 'A')
+                                    ->getQuery()
+                                    ->getOneOrNullResult(); // Get the Teacher entity
+
+                                return $teacher ? $teacher->getStudents()->toArray() : []; // Get the Student entities from the Teacher entity
+                            }
+    public function findStudentsByTeacherId($teacherId)
+    {
+        $teacher = $this->createQueryBuilder('t')
+            ->join('t.students', 's') // Join the Student entity
+            ->andWhere('t.id = :val') // Filter by the teacher's name
+            ->setParameter('val', $teacherId)
+            ->getQuery()
+            ->getOneOrNullResult(); // Get the Teacher entity
+
+        return $teacher ? $teacher->getStudents()->toArray() : []; // Get the Student entities from the Teacher entity
+    }
+
 }

@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\Student;
 use App\Form\StudentType;
 use App\Repository\StudentRepository;
+use App\Repository\TeacherRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,13 +16,22 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/student')]
 class StudentController extends AbstractController
 {
-    #[Route('/', name: 'app_student_index', methods: ['GET'])]
-    public function index(StudentRepository $studentRepository,EntityManagerInterface $em): Response
-    {
-        return $this->render('student/index.html.twig', [
-            'students' => $em->getRepository(Student::class)->findAll(),
-        ]);
-    }
+   #[Route('/', name: 'app_student_index', methods: ['GET'])]
+public function index(StudentRepository $studentRepositiory): JsonResponse
+{
+    $students = $studentRepositiory->findStudentsByTeacherName('Saugat Gautam');
+//    dd($students);
+    $data = array_map(function($student) {
+        return [
+            'id' => $student->getId(),
+            'name' => $student->getName(),
+            'email' => $student->getEmail(),
+            'semester' => $student->getSemester(),
+            'section' => $student->getSection(),
+        ];
+    }, $students);
+    return $this->json($data);
+}
 
     #[Route('/new', name: 'app_student_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
