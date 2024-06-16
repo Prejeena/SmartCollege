@@ -58,6 +58,17 @@ class StudentRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult(); // Get the Student entities
     }
+    public function findStudentsByTeacherIdAndStudentSemester($teacherId,$semester)
+    {
+        return $this->createQueryBuilder('s')
+            ->leftjoin('s.teachers', 't') // Join the Teacher entity
+            ->andWhere('t.id = :teacherId') // Filter by the teacher's Id
+            ->andWhere('s.semester = :semester') // Filter by the teacher's
+            ->setParameter('teacherId', $teacherId)
+            ->setParameter('semester', $semester)
+            ->getQuery()
+            ->getResult(); // Get the Student entities
+    }
     public function findStudentsByTeacherIdAndStudentSection($teacherId,$section)
     {
         return $this->createQueryBuilder('s')
@@ -69,14 +80,15 @@ class StudentRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult(); // Get the Student entities
     }
-    public function findStudentsByTeacherIdAndStudentSemester($teacherId,$section)
+
+    public function findStudentsByTeacherIdAndStudentSubject($teacherId,$subject)
     {
         return $this->createQueryBuilder('s')
             ->leftjoin('s.teachers', 't') // Join the Teacher entity
             ->andWhere('t.id = :teacherId') // Filter by the teacher's Id
-            ->andWhere('s.section = :section') // Filter by the teacher's Id
+            ->andWhere('s.section = :subject') // Filter by the teacher's
             ->setParameter('teacherId', $teacherId)
-            ->setParameter('section', $section)
+            ->setParameter('subject', $subject)
             ->getQuery()
             ->getResult(); // Get the Student entities
     }
@@ -90,6 +102,47 @@ class StudentRepository extends ServiceEntityRepository
             ->setParameter('teacherId', $teacherId)
             ->setParameter('section', $section)
             ->setParameter('semester', $semester)
+            ->getQuery()
+            ->getResult(); // Get the Student entities
+    }
+    public function findStudentsByTeacherIdAndStudentSectionAndStudentSubject($teacherId,$section,$subject)
+    {
+        return $this->createQueryBuilder('s')
+            ->leftjoin('s.teachers', 't') // Join the Teacher entity
+            ->andWhere('t.id = :teacherId') // Filter by the teacher's Id
+            ->andWhere('s.section = :section') // Filter by the teacher's section
+            ->andWhere('s.subject = :subject') // Filter by the teacher's subject
+            ->setParameter('teacherId', $teacherId)
+            ->setParameter('section', $section)
+            ->setParameter('subject', $subject)
+            ->getQuery()
+            ->getResult(); // Get the Student entities
+    }
+    public function findStudentsByTeacherIdAndStudentSemesterAndStudentSubject($teacherId,$semester,$subject)
+    {
+        return $this->createQueryBuilder('s')
+            ->leftjoin('s.teachers', 't') // Join the Teacher entity
+            ->andWhere('t.id = :teacherId') // Filter by the teacher's Id
+            ->andWhere('s.semester = :semester') // Filter by the teacher's Id
+            ->andWhere('s.subject = :subject') // Filter by the teacher's subject
+            ->setParameter('teacherId', $teacherId)
+            ->setParameter('semester', $semester)
+            ->setParameter('subject', $subject)
+            ->getQuery()
+            ->getResult(); // Get the Student entities
+    }
+    public function findStudentsByTeacherIdAndStudentSectionAndStudentSemesterAndStudentSubject($teacherId,$semester,$section,$subject)
+    {
+        return $this->createQueryBuilder('s')
+            ->leftjoin('s.teachers', 't') // Join the Teacher entity
+            ->andWhere('t.id = :teacherId') // Filter by the teacher's Id
+            ->andWhere('s.semester = :semester') // Filter by the teacher's Id
+            ->andWhere('s.section = :section') // Filter by the teacher's section
+            ->andWhere('s.subject = :subject') // Filter by the teacher's section
+            ->setParameter('teacherId', $teacherId)
+            ->setParameter('semester', $semester)
+            ->setParameter('section', $section)
+            ->setParameter('subject', $subject)
             ->getQuery()
             ->getResult(); // Get the Student entities
     }

@@ -2,10 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Attendance;
 use App\Entity\Student;
 use App\Form\StudentType;
+use App\Repository\AttendanceRepository;
 use App\Repository\StudentRepository;
-use App\Repository\TeacherRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,77 +17,85 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/student')]
 class StudentController extends AbstractController
 {
-   #[Route('/', name: 'app_student_index', methods: ['GET'])]
-public function index(StudentRepository $studentRepositiory): JsonResponse
-{
-    $students = $studentRepositiory->findStudentsByTeacherName('Saugat Gautam');
-//    dd($students);
-    $data = array_map(function($student) {
-        return [
-            'id' => $student->getId(),
-            'name' => $student->getName(),
-            'email' => $student->getEmail(),
-            'semester' => $student->getSemester(),
-            'section' => $student->getSection(),
-        ];
-    }, $students);
-    return $this->json($data);
-}
-
-    #[Route('/new', name: 'app_student_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/', name: 'app_all_student', methods: ['GET'])]
+    public function index(StudentRepository $studentRepositiory): JsonResponse
     {
-        $student = new Student();
-        $form = $this->createForm(StudentType::class, $student);
-        $form->handleRequest($request);
+        $students = $studentRepositiory->findStudentsByTeacherName('Saugat Gautam');
+        $data = array_map(function ($student) {
+            return [
+                'id' => $student->getId(),
+                'name' => $student->getName(),
+                'email' => $student->getEmail(),
+                'semester' => $student->getSemester(),
+                'section' => $student->getSection(),
+            ];
+        }, $students);
+        return $this->json($data);
+    }
+    #[Route('/semester/{semester}', name: 'app_student_semester', methods: ['GET'])]
+    public function withSemester(StudentRepository $studentRepositiory, int $semester,): JsonResponse
+    {
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($student);
-            $entityManager->flush();
+        $students = $studentRepositiory->findStudentsByTeacherIdAndStudentSemester(1, $semester);
+        $data = array_map(function ($student) {
+            return [
+                'id' => $student->getId(),
+                'name' => $student->getName(),
+                'email' => $student->getEmail(),
+                'semester' => $student->getSemester(),
+                'section' => $student->getSection(),
+            ];
+        }, $students);
+        return $this->json($data);
+    }
+    #[Route('/section/{section}', name: 'app_student_section', methods: ['GET'])]
+    public function withSection(StudentRepository $studentRepositiory, string $section,): JsonResponse
+    {
 
-            return $this->redirectToRoute('app_student_index', [], Response::HTTP_SEE_OTHER);
-        }
+        $students = $studentRepositiory->findStudentsByTeacherIdAndStudentSection(1, $section);
+        $data = array_map(function ($student) {
+            return [
+                'id' => $student->getId(),
+                'name' => $student->getName(),
+                'email' => $student->getEmail(),
+                'semester' => $student->getSemester(),
+                'section' => $student->getSection(),
+            ];
+        }, $students);
+        return $this->json($data);
+    }
+    #[Route('/subject/{subject}', name: 'app_student_subject', methods: ['GET'])]
+    public function withsubject(StudentRepository $studentRepositiory, int $subject,): JsonResponse
+    {
 
-        return $this->render('student/new.html.twig', [
-            'student' => $student,
-            'form' => $form,
-        ]);
+        $students = $studentRepositiory->findStudentsByTeacherIdAndStudentSubject(1, $subject);
+        $data = array_map(function ($student) {
+            return [
+                'id' => $student->getId(),
+                'name' => $student->getName(),
+                'email' => $student->getEmail(),
+                'semester' => $student->getSemester(),
+                'section' => $student->getSection(),
+            ];
+        }, $students);
+        return $this->json($data);
     }
 
-    #[Route('/{id}', name: 'app_student_show', methods: ['GET'])]
-    public function show(Student $student): Response
+    #[Route('/semester/{semester}/section/{section}', name: 'app_student_withsectionandsemester_index', methods: ['GET'])]
+    public function studentSectionAndStudentSemester(StudentRepository $studentRepositiory, string $section, int $semester,): JsonResponse
     {
-        return $this->render('student/show.html.twig', [
-            'student' => $student,
-        ]);
+
+        $students = $studentRepositiory->findStudentsByTeacherIdAndStudentSectionAndStudentSemester(1, $section, $semester);
+        $data = array_map(function ($student) {
+            return [
+                'id' => $student->getId(),
+                'name' => $student->getName(),
+                'email' => $student->getEmail(),
+                'semester' => $student->getSemester(),
+                'section' => $student->getSection(),
+            ];
+        }, $students);
+        return $this->json($data);
     }
 
-    #[Route('/{id}/edit', name: 'app_student_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Student $student, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(StudentType::class, $student);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_student_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('student/edit.html.twig', [
-            'student' => $student,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_student_delete', methods: ['POST'])]
-    public function delete(Request $request, Student $student, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$student->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($student);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_student_index', [], Response::HTTP_SEE_OTHER);
-    }
 }

@@ -48,7 +48,7 @@ class TeacherRepository extends ServiceEntityRepository
                                     ->andWhere('t.name = :teacherName') // Filter by the teacher's name
                                     ->andWhere('s.section = :studentName') // Filter by the student's name
                                     ->setParameter('teacherName', $teacherName)
-                                    ->setParameter('studentName', 'A')
+                                    ->setParameter('studentName', $studentName)
                                     ->getQuery()
                                     ->getOneOrNullResult(); // Get the Teacher entity
 
